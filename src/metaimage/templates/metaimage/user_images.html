@@ -1,0 +1,33 @@
+{% extends "metaimage/base.html" %}
+
+{% load i18n %}
+{% load humanize %}
+{% load pagination_tags %}
+{% load tagging_tags %}
+{% load threadedcommentstags %}
+
+{% block head_title %}{% blocktrans %}Your Images{% endblocktrans %}{% endblock %}
+
+{% block body %}
+    
+    <h1>{% trans "Images from " %}{{ user.username }}</h1>
+    
+    {% if images %}
+    {% autopaginate images %}
+        <div class="thumb-row clearfix">
+        {% for image in images %}
+        <div class="gallery-photo-thumb">
+            <a href="{% url image_details image.id %}"><img src="{{ image.get_thumbnail_url }}" alt="{{ image.title }}"/></a><br />
+            from <a href="{% url profile_detail image.user.username %}">{{ image.user.username }}</a><br />
+            <img src="{{ MEDIA_URL }}pinax/images/silk/icons/comment.png" border="0" class="noborder" align="absmiddle" /><a href="{% url image_details image.id %}/#imagecomments">{% get_comment_count for image as commentcount %} {{ commentcount }} Comments</a><br />
+            Viewed {{ image.view_count }} times
+        </div>
+        {% endfor %}
+        </div>
+    {% paginate %}
+    {% else %}
+    <p>No images were found.</p>
+    {% endif %}
+    
+    
+{% endblock %}

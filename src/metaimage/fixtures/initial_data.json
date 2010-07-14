@@ -1,0 +1,82 @@
+[
+    {
+        "pk": 1,
+        "model": "photologue.photosize",
+        "fields": {
+            "name": "square25",
+            "watermark": null,
+            "increment_count": false,
+            "effect": null,
+            "crop": true,
+            "height": 25,
+            "width": 25,
+            "upscale": false,
+            "pre_cache": true,
+            "quality": 75
+        }
+    }, 
+    {
+        "pk": 2,
+        "model": "photologue.photosize",
+        "fields": {
+            "name": "square50",
+            "watermark": null,
+            "increment_count": false,
+            "effect": null,
+            "crop": true,
+            "height": 50,
+            "width": 50,
+            "upscale": true,
+            "pre_cache": true,
+            "quality": 75
+        }
+    }, 
+    {
+        "pk": 3,
+        "model": "photologue.photosize",
+        "fields": {
+            "name": "height230",
+            "watermark": null,
+            "increment_count": false,
+            "effect": null,
+            "crop": false,
+            "height": 230,
+            "width": 0,
+            "upscale": true,
+            "pre_cache": true,
+            "quality": 85
+        }
+    }, 
+    {
+        "pk": 4,
+        "model": "photologue.photosize",
+        "fields": {
+            "name": "width230",
+            "watermark": null,
+            "increment_count": false,
+            "effect": null,
+            "crop": false,
+            "height": 0,
+            "width": 230,
+            "upscale": false,
+            "pre_cache": true,
+            "quality": 85
+        }
+    }, 
+    {
+        "pk": 5,
+        "model": "photologue.photosize",
+        "fields": {
+            "name": "width500",
+            "watermark": null,
+            "increment_count": true,
+            "effect": null,
+            "crop": false,
+            "height": 0,
+            "width": 500,
+            "upscale": false,
+            "pre_cache": true,
+            "quality": 85
+        }
+    }
+]
