@@ -9,7 +9,7 @@ from metaimage.models import MetaImage
 class TestMetaImage(TestCase):
 
     def setUp(self):
-        self.Yoda = User.objects.get(id=1)
+        self.foo = User.objects.create_user('foo', 'foo@test.com', 'bar')
         self.remote_img_url = 'http://media.djangoproject.com/img/site/hdr_logo.gif'
 
     def test_metaimage_save(self):
@@ -22,7 +22,7 @@ class TestMetaImage(TestCase):
             slug='django-logo',
             source_url=self.remote_img_url,
             source_note='The logo of the Django project, for testing.',
-            creator=self.Yoda,
+            creator=self.foo,
             )
         test_metaimage.save()
         the_metaimage = MetaImage.objects.get(slug='django-logo')

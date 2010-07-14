@@ -1,6 +1,3 @@
-# Code forked from Pinax's social_project photos app, adapted for
-# SkillSavvy, July 2009.
-
 from cStringIO import StringIO
 from datetime import datetime
 import re
@@ -17,12 +14,14 @@ from django.utils.translation import ugettext_lazy as _
 
 from PIL import Image
 
-from helpers.openanything import fetch
 from photologue.models import ImageModel, PhotoSize
 from tagging.fields import TagField
 
+from openanything import fetch
+
 
 MAX_REMOTE_IMAGE_SIZE = 1048576  # 1 MB
+
 PRIVACY_CHOICES = (
     (1, _('Public')),
     (2, _('Friends')),
