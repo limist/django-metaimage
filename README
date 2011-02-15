@@ -1,40 +1,45 @@
 django-metaimage is an app for the Django web framework; it provides a
 wrapper of useful functionality around ImageModel from
-django-photologue, which it requires.  It is GPL-licensed.  Some of
-the code was initially borrowed from Pinax's photo app.
+django-photologue, which it requires.  It is GPL-licensed.  
+
+Some of the code was initially borrowed from Pinax's photo app.
 
 
-RATIONALE
+OVERVIEW
+--------
 
 Many if not most websites need to deal with images, sometimes uploaded
-from users, and sometimes retrieved from a remote site.
-django-metaimage is meant to help your Django site/app by providing
-you a class, MetaImage (inherits from django-photologue's ImageModel)
-with useful image-relevant attributes and methods.
+from users, and sometimes retrieved from a remote site.  The
+django-metaimage app is meant to help your Django site/app by
+providing you a class, MetaImage (inherits from django-photologue's
+ImageModel) providing useful, image-relevant attributes and methods.
 
 MetaImage attributes include:
+
 - title, slug, caption, source_note (for attribution text, copyrights, etc.)
 - source_url
 - privacy, safetylevel
 - tags
 
 MetaImage methods include:
-- A smart save() method that can automatically download a remote image
-  to your filesystem, so you'll always have a local copy should the
-  remote image vanish into the Internet aether.
-- render(), which spits out the HTML to show your image on a webpage. 
+
+- A save() method that can automatically download a remote image to
+  your filesystem, so you'll always have a local copy should the
+  remote image vanish into the Internet aether.  - render(), which
+  spits out the HTML to show your image on a webpage.
 
 Basic views, tests, and templates are also provided.
 
 
 INSTALLATION
+------------
 
-After installation via pip, just add metaimage to your
-settings.py.INSTALLED_APPS list, and possibly update your sitewide
-urls.py if you want to use MetaImage's pages.
+After installation via pip, just add metaimage to your Django project
+settings.py file, in the INSTALLED_APPS list.  You may also want to
+update your sitewide urls.py if you want to use MetaImage's pages.
 
 
 BUGS
-
+----
 For now, please send bug reports to me, k@limist.com, thank you.
 
