@@ -115,7 +115,7 @@ class MetaImage(ImageModel, BaseModel):
 
     @models.permalink
     def get_absolute_url(self):
-        return ("image_details", [self.pk])
+        return ("metaimage_details", [self.pk])
 
     def save(self, *args, **kwargs):
         """

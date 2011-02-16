@@ -13,9 +13,9 @@ from metaimage.forms import MetaImageUploadForm, MetaImageEditForm
 
 
 @login_required
-def show_images(request, template_name="metaimage/latest.html"):
+def show_metaimages(request, template_name="metaimage/latest.html"):
     """
-    For authenticated user only, show public images, most recent
+    For an authenticated user only, show public images - most recent
     first.
     """
     images = MetaImage.objects.filter(
@@ -29,7 +29,7 @@ def show_images(request, template_name="metaimage/latest.html"):
 
 
 @login_required
-def image_details(request, id, template_name="metaimage/details.html"):
+def metaimage_details(request, id, template_name="metaimage/details.html"):
     """
     Show details for a MetaImage instance.
     """
@@ -54,9 +54,9 @@ def image_details(request, id, template_name="metaimage/details.html"):
 
 
 @login_required
-def upload_image(request, form_class=MetaImageUploadForm, template_name="metaimage/upload.html"):
+def upload_metaimage(request, form_class=MetaImageUploadForm, template_name="metaimage/upload.html"):
     """
-    Show and process upload form for images.
+    Show and process upload form for a MetaImage.
     """
     image_form = form_class()
     if request.method == 'POST' and request.POST.get("action") == "upload":
@@ -66,9 +66,9 @@ def upload_image(request, form_class=MetaImageUploadForm, template_name="metaima
             image.user = request.user
             image.save()
             request.user.message_set.create(
-                message=_("Successfully uploaded image '%s'") % image.title)
+                message=_("Successfully uploaded image '%s'.") % image.title)
             return HttpResponseRedirect(
-                reverse('image_details', args=(image.id,)))
+                reverse('metaimage_details', args=(image.id,)))
     t_dict = {
         "image_form": image_form,
         }
@@ -79,7 +79,7 @@ def upload_image(request, form_class=MetaImageUploadForm, template_name="metaima
 
 
 @login_required
-def your_images(request, template_name="metaimage/your_images.html"):
+def your_metaimages(request, template_name="metaimage/your_images.html"):
     """
     Show MetaImages belonging to the currently authenticated user.
     """
@@ -90,7 +90,7 @@ def your_images(request, template_name="metaimage/your_images.html"):
 
 
 @login_required
-def show_user_images(request, username, template_name="metaimage/user_images.html"):
+def show_user_metaimages(request, username, template_name="metaimage/user_images.html"):
     """
     Get a given user's public images, display them.
     """
@@ -104,12 +104,12 @@ def show_user_images(request, username, template_name="metaimage/user_images.htm
 
 
 @login_required
-def edit_image(request, id, form_class=MetaImageEditForm, template_name="metaimage/edit.html"):
+def edit_metaimage(request, id, form_class=MetaImageEditForm, template_name="metaimage/edit.html"):
     image = get_object_or_404(MetaImage, id=id)
     if image.user != request.user:
         request.user.message_set.create(
-            message="You can't edit images that aren't yours.")
-        return HttpResponseRedirect(reverse('image_details', args=(image.id,)))
+            message=_("You can't edit images that aren't yours."))
+        return HttpResponseRedirect(reverse('metaimage_details', args=(image.id,)))
     image_form = form_class(instance=image)
     image_url = image.get_display_url()
     if request.method == "POST" and request.POST["action"] == "update":
@@ -118,9 +118,9 @@ def edit_image(request, id, form_class=MetaImageEditForm, template_name="metaima
             imageobj = image_form.save(commit=False)
             imageobj.save()
             request.user.message_set.create(
-                message=_("Successfully updated image '%s'") % image.title)
+                message=_("Successfully updated image '%s'.") % image.title)
             return HttpResponseRedirect(
-                reverse('image_details', args=(image.id,)))
+                reverse('metaimage_details', args=(image.id,)))
     t_dict = {
         "image_form": image_form,
         "image": image,
@@ -133,15 +133,15 @@ def edit_image(request, id, form_class=MetaImageEditForm, template_name="metaima
 
 
 @login_required
-def destroy_image(request, id):
+def destroy_metaimage(request, id):
     image = MetaImage.objects.get(pk=id)
     title = image.title
     if image.user != request.user:
         request.user.message_set.create(
-            message="You can't delete images that aren't yours")
-        return HttpResponseRedirect(reverse("your_images"))
+            message=_("You can't delete images that aren't yours."))
+        return HttpResponseRedirect(reverse("your_metaimages"))
     if request.method == "POST" and request.POST["action"] == "delete":
         image.delete()
         request.user.message_set.create(
-            message=_("Successfully deleted image '%s'") % title)
-    return HttpResponseRedirect(reverse("your_images"))
+            message=_("Successfully deleted image '%s'.") % title)
+    return HttpResponseRedirect(reverse("your_metaimages"))
