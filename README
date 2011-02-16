@@ -2,17 +2,21 @@ django-metaimage is an app for the Django web framework; it provides a
 wrapper of useful functionality around ImageModel from
 django-photologue, which it requires.  It is GPL-licensed.  
 
-Some of the code was initially borrowed from Pinax's photo app.
+Some of the code was inspired/borrowed from Pinax's photo app, but I
+have removed Pinax dependencies, so that django-metaimage only
+requires Django itself, django-photologue, and django-tagging.
 
 
 OVERVIEW
 --------
 
 Many if not most websites need to deal with images, sometimes uploaded
-from users, and sometimes retrieved from a remote site.  The
-django-metaimage app is meant to help your Django site/app by
-providing you a class, MetaImage (inherits from django-photologue's
-ImageModel) providing useful, image-relevant attributes and methods.
+from users, and sometimes retrieved from a remote site.  It's useful
+to track metadata about such images, including tags and local binary
+copies of remote images. The django-metaimage app is meant to help
+your Django site/app by providing you a class, MetaImage (inherits
+from django-photologue's ImageModel) providing useful, image-relevant
+attributes and methods.
 
 MetaImage attributes include:
 
@@ -25,8 +29,8 @@ MetaImage methods include:
 
 - A save() method that can automatically download a remote image to
   your filesystem, so you'll always have a local copy should the
-  remote image vanish into the Internet aether.  - render(), which
-  spits out the HTML to show your image on a webpage.
+  remote image vanish into the Internet aether.  
+- render(), which spits out the HTML to show your image on a webpage.
 
 Basic views, tests, and templates are also provided.
 
@@ -34,12 +38,39 @@ Basic views, tests, and templates are also provided.
 INSTALLATION
 ------------
 
-After installation via pip, just add metaimage to your Django project
-settings.py file, in the INSTALLED_APPS list.  You may also want to
-update your sitewide urls.py if you want to use MetaImage's pages.
+After installation via "pip install django-metaimage" or from source,
+just add "tagging" and "metaimage" to your Django project settings.py
+file, in the INSTALLED_APPS list, e.g.
+
+::
+
+    INSTALLED_APPS = [
+        ...
+        "photologue",  # Optional, metaimage does not need its db models.
+        "tagging",
+        "metaimage",
+        ...
+        ]
+
+
+And then, do a "manage.py syncdb" to create the database-side tables
+needed.
+
+Optional: You may also want to update your site-wide urls.py if you want to use
+MetaImage's pages, e.g.
+
+::
+
+    urlpatterns = patterns("",
+        ...
+        (r"^metaimage/", include("metaimage.urls")),
+        ...
+        )
 
 
 BUGS
 ----
-For now, please send bug reports to me, k@limist.com, thank you.
+
+Please log bugs/issues using metaimage's github site,
+http://github.com/limist/django-metaimage/issues
 
