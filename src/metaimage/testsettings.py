@@ -1,8 +1,8 @@
 DATABASES = {
     'default': {
-	'ENGINE': 'sqlite3',
-	'NAME': '/tmp/metaimage.db',
-	}
+        'ENGINE': 'sqlite3',
+        'NAME': '/tmp/metaimage.db',
+        }
     }
 
 INSTALLED_APPS = [
@@ -14,5 +14,3 @@ INSTALLED_APPS = [
     ]
 
 ROOT_URLCONF = ['metaimage.urls']
-
-    

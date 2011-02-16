@@ -1,5 +1,3 @@
-import os
-
 from django.contrib.auth.models import User
 from django.test import TestCase
 
@@ -13,7 +11,8 @@ class TestMetaImage(TestCase):
         self.remote_img_url = 'http://media.djangoproject.com/img/site/hdr_logo.gif'
 
     def test_metaimage_save(self):
-        """MetaImage wraps around photologue.ImageModel, which wraps
+        """
+        MetaImage wraps around photologue.ImageModel, which wraps
         around Django's ImageField.  So this simple test hits a lot of
         layers.
         """
