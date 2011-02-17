@@ -1,33 +1,41 @@
 {% extends "metaimage/base.html" %}
 
 {% load i18n %}
-{% load humanize %}
-{% load pagination_tags %}
 {% load tagging_tags %}
-{% load threadedcommentstags %}
 
-{% block head_title %}{% blocktrans %}Your Images{% endblocktrans %}{% endblock %}
+{% comment %}
+These templatetags can be used if Pinax is installed; humanize just needs
+django.contrib.humanize to be in your settings.py INSTALLED_APPS:
+    {% load humanize %}
+    {% load pagination_tags %}
+    {% load threadedcommentstags %}
+{% endcomment %}
+
+{% block head_title %}
+    {% blocktrans %}Your Images{% endblocktrans %}
+{% endblock %}
 
 {% block body %}
+    <h1>{% trans "Images from " %}{{ the_user.username }}</h1>
     
-    <h1>{% trans "Images from " %}{{ user.username }}</h1>
-    
-    {% if images %}
-    {% autopaginate images %}
+    {% if metaimages %}
+        {% comment %}{% autopaginate images %}{% endcomment %}
         <div class="thumb-row clearfix">
-        {% for image in images %}
+        {% for metaimage in metaimages %}
         <div class="gallery-photo-thumb">
-            <a href="{% url metaimage_details image.id %}"><img src="{{ image.get_thumbnail_url }}" alt="{{ image.title }}"/></a><br />
-            from <a href="{% url profile_detail image.user.username %}">{{ image.user.username }}</a><br />
-            <img src="{{ MEDIA_URL }}pinax/images/silk/icons/comment.png" border="0" class="noborder" align="absmiddle" /><a href="{% url metaimage_details image.id %}/#imagecomments">{% get_comment_count for image as commentcount %} {{ commentcount }} Comments</a><br />
-            Viewed {{ image.view_count }} times
+            {{ metaimage.render_thumbnail_linked }}
+            <br>
+            from <a href="{% url profile_detail metaimage.creator.username %}">{{ metaimage.creator.username }}</a><br>
+            {% comment %}
+            <img src="{{ MEDIA_URL }}pinax/images/silk/icons/comment.png" border="0" class="noborder" align="absmiddle" /><a href="{% url metaimage_details metaimage.id %}/#imagecomments">{% get_comment_count for metaimage as commentcount %} {{ commentcount }} Comments</a><br>
+            {% endcomment %}
+            Viewed {{ metaimage.view_count }} times
         </div>
         {% endfor %}
         </div>
-    {% paginate %}
+    {% commment %}{% paginate %}{% endcomment %}
     {% else %}
-    <p>No images were found.</p>
+        <p>No images were found.</p>
     {% endif %}
-    
     
 {% endblock %}

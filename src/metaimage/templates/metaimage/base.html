@@ -2,15 +2,12 @@
 
 {% load i18n %}
 
-{% block rtab_id %}id="photos_tab"{% endblock %}
-
-{% block subnav %}
+{% block body %}
     {% if user.is_authenticated %}
         <ul>
-            <li><a href="{% url photos %} ">{% trans "Latest Photos" %}</a></li>
-            <li><a href="{% url photos_yours %}">{% trans "Your Photos" %}</a></li>
-            <li><a href="{% url friends_photos %}">{% trans "Friends' Photos" %}</a></li>
-            <li><a href="{% url photo_upload %}">{% trans "Upload a Photo" %}</a></li>
+            <li><a href="{% url show_metaimages %} ">{% trans "Latest Images" %}</a></li>
+            <li><a href="{% url your_metaimages %}">{% trans "Your Images" %}</a></li>
+            <li><a href="{% url upload_metaimage %}">{% trans "Upload an Image" %}</a></li>
         </ul>
     {% else %}
         &nbsp;

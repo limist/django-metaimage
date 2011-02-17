@@ -75,10 +75,28 @@ class ImageSet(BaseModel):
 
 class MetaImage(ImageModel, BaseModel):
     """
-    An image with its useful details.
+    An image with its useful details.  Parallels photologue's Photo
+    class, but with different functionality.
 
     Note that ImageModel from photologue.models is an abstract model
     too, so there's no one-to-one joining going on here, thankfully.
+    As to what the ImageModel base class provides, view the ImageModel
+    source at,
+    http://code.google.com/p/django-photologue/source/browse/trunk/photologue/models.py
+
+    The key ImageModel attributes include:
+    - image, the ImageField
+    - date_taken
+    - view_count
+    - crop_from, default 'center'
+    - effect, e.g. WaterMark, PhotoEffect
+
+    Useful methods from ImageModel include:
+    - image_filename()
+    - get_<photosize>_url(), get_<photosize>_filename() where
+      <photosize> is already defined. Note that django-metaimage
+      defines some starting PhotoSize instances in
+      fixtures/initial_data.json such as square25, square50, etc.
     """
     SAFETY_LEVEL = (
         (1, _('Safe')),
@@ -187,3 +205,9 @@ class MetaImage(ImageModel, BaseModel):
                 % (self.get_absolute_url(), img_html))
         else:
             return img_html
+
+    def render_linked(self, the_size='width500'):
+        return self.render(the_size, linked=True)
+
+    def render_thumbnail_linked(self):
+        return self.render_linked(the_size='square25')

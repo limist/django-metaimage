@@ -39,14 +39,14 @@ INSTALLATION
 ------------
 
 After installation via "pip install django-metaimage" or from source,
-just add "tagging" and "metaimage" to your Django project settings.py
-file, in the INSTALLED_APPS list, e.g.
+just add "photologue", "tagging" and "metaimage" to your Django
+project settings.py file, in the INSTALLED_APPS list, e.g.
 
 ::
 
     INSTALLED_APPS = [
         ...
-        "photologue",  # Optional, metaimage does not need its db models.
+        "photologue",
         "tagging",
         "metaimage",
         ...
@@ -56,8 +56,12 @@ file, in the INSTALLED_APPS list, e.g.
 And then, do a "manage.py syncdb" to create the database-side tables
 needed.
 
-Optional: You may also want to update your site-wide urls.py if you want to use
-MetaImage's pages, e.g.
+Optional: Templates are provided for adding, editing, viewing, etc. of
+metaimages; they're very basic and meant only as a starting point.
+But if you want to use them directly, do at least these two things: 1)
+get and install django-uni-form > 0.7.0, which some of the templates
+rely on, and also update your setting.py INSTALLED_APPS to list
+"uni_form"; 2) update your site-wide urls.py, e.g.
 
 ::
 
@@ -66,6 +70,12 @@ MetaImage's pages, e.g.
         (r"^metaimage/", include("metaimage.urls")),
         ...
         )
+
+
+Also, many of the metaimage templates have templatetags dependencies
+that are commented out, as they require Pinax or other packages; you
+can activate them as needed, but be sure to update your INSTALLED_APPS
+accordingly.
 
 
 BUGS

@@ -1,51 +1,53 @@
 {% extends "metaimage/base.html" %}
 
 {% load i18n %}
-{% load humanize %}
-{% load tagging_tags %}
-{% load comments_tag %}
 {% load metaimage_tags %}
-{% load flagtags %}
+{% load tagging_tags %}
 
-{% block head_title %}{% blocktrans %}Image Details{% endblocktrans %}{% endblock %}
+{% comment %}
+These templatetags can be used if Pinax is installed; humanize just needs
+django.contrib.humanize to be in INSTALLED_APPS:
+    {% load comments_tag %}
+    {% load flagtags %}
+    {% load humanize %}
+{% endcomment %}
+
+{% block head_title %}
+    {% blocktrans %}Image Details{% endblocktrans %}
+{% endblock %}
 
 {% block body %}
-  
-    <div class="right_panel">
-        {% include "metaimage/image_right_panel.html" %}
-    </div>
-    
-    <div class="left_panel">
     <h1>{% trans "Image Details" %}</h1>
     
-    {% if image %}
+    {% if the_metaimage %}
         <div class="gallery-photo">
-            <img src="{{ image_url }}" alt="{{ image.title }}"/>
+            {{ the_metaimage.render }}
         </div>
         <div class="photo-title">
-            <h2>{{ image.title }}</h2>
+            <h2>{{ the_metaimage.title }}</h2>
         </div>
         <div class="photo-caption">
-            <p>{{ image.caption }}</p>
+            <p>{{ the_metaimage.caption }}</p>
         </div>
         
+        {% comment %}
         <div class="form-toggle">
             <p><span id="flag-toggle"><img src="{{MEDIA_URL}}pinax/images/silk/icons/flag_red.png" />{% trans "Flag as inappropriate" %}</span></p>
              <div id="flag-form" style="display: none;">
-                {% flag image request.user.id %}
+                {% flag the_metaimage request.user.id %}
              </div>
         </div>
         
         <h3>Comments on This Image</h3>
         {% comments image %}
+        {% endcomment %}
     {% else %}
-    <p>No images were found.</p>
+        <p>No images were found.</p>
     {% endif %}
-    </div>
     
 {% endblock %}
 
-
+{% comment %}
 {% block extra_body %}
     <script type="text/javascript">
         $(document).ready(function() {
@@ -59,7 +61,6 @@
                 $('#flag-form').show();
                 $('#flag-form ul.errorlist').autoscroll();
             }
-            
         });
         
         $(document).ready(function() {
@@ -71,3 +72,4 @@
         });
     </script>
 {% endblock %}
+{% endcomment %}
