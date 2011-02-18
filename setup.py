@@ -8,10 +8,10 @@ def read(fname):
 
 setup(
     name='django-metaimage',
-    version='0.2',
+    version='0.3',
     url='',
     license='GPLv3',
-    description='Provides a useful subclass of photologue.ImageModel.',
+    description='Useful image-functionality on top of django-photologue.',
     long_description=read('README'),
     author='Kai',
     author_email='k@limist.com',
