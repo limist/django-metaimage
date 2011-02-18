@@ -10,22 +10,25 @@ requires Django itself, django-photologue, and django-tagging.
 OVERVIEW
 --------
 
-Many if not most websites need to deal with images, sometimes uploaded
-from users, and sometimes retrieved from a remote site.  It's useful
-to track metadata about such images, including tags and local binary
-copies of remote images. The django-metaimage app is meant to help
-your Django site/app by providing you a class, MetaImage (inherits
-from django-photologue's ImageModel) providing useful, image-relevant
-attributes and methods.
+Most websites need to deal with images, sometimes uploaded from users,
+or retrieved from a remote site.  The django-metaimage package is
+especially helpful with the latter case: you can supply just the URL
+of a remote image, and it will be downloaded and saved locally.
+Overall, this app is an alternative way to use the powerful
+django-photologue app with your site.
 
-MetaImage attributes include:
+The main class, MetaImage, enables storing useful metadata about
+images, including a title, caption, notes about the source
+(e.g. copyrights), and tags.  MetaImage attributes include:
 
 - title, slug, caption, source_note (for attribution text, copyrights, etc.)
 - source_url
-- privacy, safetylevel
+- privacy 
+- safetylevel
 - tags
 
-MetaImage methods include:
+
+Key MetaImage methods include:
 
 - A save() method that can automatically download a remote image to
   your filesystem, so you'll always have a local copy should the
@@ -38,9 +41,9 @@ Basic views, tests, and templates are also provided.
 INSTALLATION
 ------------
 
-After installation via "pip install django-metaimage" or from source,
-just add "photologue", "tagging" and "metaimage" to your Django
-project settings.py file, in the INSTALLED_APPS list, e.g.
+Install via "pip install django-metaimage" or from source. Then just
+add "photologue", "tagging" and "metaimage" to your Django project
+settings.py file, in the INSTALLED_APPS list, e.g.
 
 ::
 
@@ -59,7 +62,7 @@ needed.
 Optional: Templates are provided for adding, editing, viewing, etc. of
 metaimages; they're very basic and meant only as a starting point.
 But if you want to use them directly, do at least these two things: 1)
-get and install django-uni-form > 0.7.0, which some of the templates
+get and install django-uni-form > 0.7.0 which some of the templates
 rely on, and also update your setting.py INSTALLED_APPS to list
 "uni_form"; 2) update your site-wide urls.py, e.g.
 
@@ -72,15 +75,15 @@ rely on, and also update your setting.py INSTALLED_APPS to list
         )
 
 
-Also, many of the metaimage templates have templatetags dependencies
-that are commented out, as they require Pinax or other packages; you
-can activate them as needed, but be sure to update your INSTALLED_APPS
-accordingly.
+Also, many of the django-metaimage templates have templatetags
+dependencies that are commented out, as they require Pinax or other
+packages; you can activate them as needed, but be sure to update your
+INSTALLED_APPS accordingly.
 
 
 BUGS
 ----
 
-Please log bugs/issues using metaimage's github site,
+Please log bugs/issues using django-metaimage's github site,
 http://github.com/limist/django-metaimage/issues
 
