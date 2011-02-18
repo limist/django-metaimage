@@ -25,5 +25,7 @@ class MetaImageAdmin(BaseModelAdmin):
             'fields': ('image', 'crop_from', 'effect', 'title', 'slug', 'caption', 'source_url', 'source_note', 'safetylevel', 'privacy', 'tags', 'imageset', 'admin_notes', 'is_active')
             }),
         )
-    list_display = ('title', 'slug', 'caption', 'creator', 'created','is_public','safetylevel','tags',)    
+    list_display = ('title', 'slug', 'caption', 'creator', 'created','is_public','safetylevel','tags',)
+    prepopulated_fields = {"slug": ("title",)}
+
 admin.site.register(MetaImage, MetaImageAdmin)

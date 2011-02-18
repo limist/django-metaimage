@@ -17,17 +17,15 @@ django.contrib.humanize to be in INSTALLED_APPS:
 {% endblock %}
 
 {% block body %}
-    <h1>{% trans "Image Details" %}</h1>
+    <h1>{{ the_metaimage.title }}</h1>
     
     {% if the_metaimage %}
-        <div class="gallery-photo">
+        <div class="gallery-photo" style="margin: 0 auto; width:700px">
             {{ the_metaimage.render }}
-        </div>
-        <div class="photo-title">
-            <h2>{{ the_metaimage.title }}</h2>
-        </div>
-        <div class="photo-caption">
             <p>{{ the_metaimage.caption }}</p>
+            {% ifequal the_metaimage.creator request.user %}
+                <p>You can <a href="{% url edit_metaimage the_metaimage.id%}">edit this image</a>.</p>
+            {% endifequal %}
         </div>
         
         {% comment %}
@@ -36,8 +34,7 @@ django.contrib.humanize to be in INSTALLED_APPS:
              <div id="flag-form" style="display: none;">
                 {% flag the_metaimage request.user.id %}
              </div>
-        </div>
-        
+        </div>        
         <h3>Comments on This Image</h3>
         {% comments image %}
         {% endcomment %}

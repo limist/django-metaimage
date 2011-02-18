@@ -8,8 +8,13 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
 
-from metaimage.models import MetaImage
+from metaimage.models import MetaImage, PRIVACY_CHOICES
 from metaimage.forms import MetaImageUploadForm, MetaImageEditForm
+
+
+assert PRIVACY_CHOICES[0][0] == 1
+assert PRIVACY_CHOICES[0][1] == 'Public'
+PUBLIC_SETTING = PRIVACY_CHOICES[0][0]
 
 
 @login_required
@@ -19,8 +24,9 @@ def show_metaimages(request, template_name="metaimage/latest.html"):
     most recent first.
     """
     metaimages = MetaImage.objects.filter(
-        Q(is_public=True)
-        | Q(is_public=False, creator=request.user)).order_by("-created")
+        Q(privacy=PUBLIC_SETTING)
+        | Q(privacy__gt=PUBLIC_SETTING, creator=request.user)
+        ).order_by("-created")
     return render_to_response(
         template_name,
         {"metaimages": metaimages},
@@ -34,7 +40,7 @@ def metaimage_details(request, id, template_name="metaimage/details.html"):
     """
     the_metaimage = get_object_or_404(MetaImage, id=id)
     # Private images can only be seen by their creator:
-    if not the_metaimage.is_public and the_metaimage.creator != request.user:
+    if not the_metaimage.privacy==PUBLIC_SETTING and the_metaimage.creator != request.user:
         raise Http404
     is_mine = bool(the_metaimage.creator == request.user)
     if is_mine:
@@ -52,13 +58,11 @@ def upload_metaimage(request, form_class=MetaImageUploadForm, template_name="met
     """
     Show and process upload form for a MetaImage.
     """
-    metaimage_form = form_class()
+    metaimage_form = form_class(user=request.user)
     if request.method == 'POST' and request.POST.get("action") == "upload":
         metaimage_form = form_class(request.user, request.POST, request.FILES)
         if metaimage_form.is_valid():
-            metaimage = metaimage_form.save(commit=False)
-            metaimage.creator = request.user
-            metaimage.save()
+            metaimage = metaimage_form.save()
             request.user.message_set.create(
                 message=_("Successfully uploaded image '%s'.")
                 % metaimage.title)
@@ -71,7 +75,7 @@ def upload_metaimage(request, form_class=MetaImageUploadForm, template_name="met
 
 
 @login_required
-def your_metaimages(request, template_name="metaimage/your_images.html"):
+def your_metaimages(request, template_name="metaimage/latest.html"):
     """
     Show MetaImages belonging to the currently authenticated user.
     """
@@ -79,20 +83,22 @@ def your_metaimages(request, template_name="metaimage/your_images.html"):
         creator=request.user).order_by("-created")
     return render_to_response(
         template_name,
-        {"metaimages": metaimages},
+        {"metaimages": metaimages,
+         "page_title": _("Your Images")},
         context_instance=RequestContext(request))
 
 
 @login_required
-def show_user_metaimages(request, username, template_name="metaimage/user_images.html"):
+def show_user_metaimages(request, username, template_name="metaimage/latest.html"):
     """
     Get a given user's public images, display them.
     """
     the_user = get_object_or_404(User, username=username)
     metaimages = MetaImage.objects.filter(
-        creator=the_user, is_public=True).order_by("-created")
+        creator=the_user, privacy=PUBLIC_SETTING).order_by("-created")
     t_dict = {
         "metaimages": metaimages,
+        "page_title": _("Images by %s" % the_user.username),
         "the_user": the_user}
     return render_to_response(
         template_name,
@@ -115,8 +121,7 @@ def edit_metaimage(request, id, form_class=MetaImageEditForm, template_name="met
             request.POST,
             instance=metaimage)
         if metaimage_form.is_valid():
-            metaimage = metaimage_form.save(commit=False)
-            metaimage.save()
+            metaimage = metaimage_form.save()
             request.user.message_set.create(
                 message=_("Successfully updated image '%s'.") % metaimage.title)
             return HttpResponseRedirect(
@@ -132,6 +137,8 @@ def edit_metaimage(request, id, form_class=MetaImageEditForm, template_name="met
 
 @login_required
 def destroy_metaimage(request, id):
+    # Currently, 2/2011, none of the included MetaImage templates
+    # POSTs to this view.
     metaimage = MetaImage.objects.get(pk=id)
     title = metaimage.title
     if metaimage.creator != request.user:

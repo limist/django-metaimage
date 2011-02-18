@@ -6,6 +6,7 @@ from urlparse import urlparse
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.files import File
+from django.template.defaultfilters import slugify
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
@@ -166,6 +167,10 @@ class MetaImage(ImageModel, BaseModel):
                 self.image.save(filename, tmp_image_file)
             else:
                 raise MetaImageUnableToRetrieveSourceURL
+        # Handle slug; note that this solution is not very robust
+        # currently, may use django-autoslug shortly.
+        if not self.slug:
+            self.slug = slugify(self.title)
         super(MetaImage, self).save(*args, **kwargs)
 
     def generate_filename_from_url(self, the_url=None):

@@ -3,7 +3,7 @@
 {% load i18n %}
 {% load metaimage_tags %}
 {% load tagging_tags %}
-{% load uni_form %}
+{% load uni_form_tags %}
 
 {% comment %} 
 These templatetags are all available with Pinax installed, and the
@@ -20,21 +20,24 @@ corresponding apps listed in your settings.py INSTALLED_APPS:
 {% block body %}
     <h1>{% trans "Edit Image Details" %}</h1>
     
-    <div class="gallery-photo">
+    <div class="gallery-photo" style="margin: 0 auto; width:700px">
         {{ metaimage.render }}
     </div>
 
     {% ifequal metaimage.creator request.user %}
-        <form method="POST" action="">
+        <h2>{% trans "Editing Image" %}</h2>
+        <div>
+        <form class="uniForm" method="POST" action="">
         <fieldset>
-            <legend>{% trans "Editing Image" %}</legend>
             {{ metaimage_form|as_uni_form }}
+            {% csrf_token %}
             <div class="form_block">
                 <input type="hidden" name="action" value="update" />
                 <input type="submit" value="{% trans "Update Image" %}" />
             </div>
         </fieldset>
         </form>
+        </div>
     {% endifequal %}
     
 {% endblock %}

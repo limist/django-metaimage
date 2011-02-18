@@ -4,19 +4,31 @@
 {% load tagging_tags %}
 
 {% comment %}
-These templatetags can be used if Pinax is installed; humanize just needs
-django.contrib.humanize to be in your settings.py INSTALLED_APPS:
+The humanize tags just needs django.contrib.humanize to be in your
+settings.py INSTALLED_APPS: the others packages can be found on their
+own or in Pinax:
+
     {% load humanize %}
     {% load pagination_tags %}
     {% load threadedcommentstags %}
 {% endcomment %}
 
 {% block head_title %}
-    {% blocktrans %}Latest Images{% endblocktrans %}
+    {% if page_title %}
+        {{ page_title }}
+    {% else %}
+        {% blocktrans %}Latest Images{% endblocktrans %}
+    {% endif %}
 {% endblock %}
 
 {% block body %}
-    <h1>{% trans "Latest Images" %}</h1>
+    <h1>
+    {% if page_title %}
+        {{ page_title }}
+    {% else %}
+        {% trans "Latest Images" %}
+    {% endif %}
+    </h1>
     
     {% if metaimages %}
         {% comment %}{% autopaginate metaimages %}{% endcomment %}
