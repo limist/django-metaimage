@@ -1,7 +1,9 @@
+import shutil
+
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from metaimage.models import MetaImage
+from metaimage.models import MetaImage, METAIMAGE_DIR
 
 
 class TestMetaImage(TestCase):
@@ -27,11 +29,17 @@ class TestMetaImage(TestCase):
             )
         test_metaimage.save()
         the_metaimage = MetaImage.objects.get(slug='django-logo')
-        assert the_metaimage.image is not None  # Image was downloaded
+        assert the_metaimage.image is not None  # Image was downloaded OK.
         assert the_metaimage.is_public
         assert the_metaimage.updater == self.foo
         assert the_metaimage.slug == 'django-logo'
-        the_metaimage.delete()  # Removes image file too
+        print the_metaimage.image.name
+        # As of Django 1.2.5, the image file is NOT removed when the
+        # database object is deleted.
+        the_metaimage.delete()
 
     def tearDown(self):
-        pass
+        # In order that image filenames are repeatable, it's necessary
+        # to delete the directory where they're stored between test
+        # runs.
+        shutil.rmtree(METAIMAGE_DIR)

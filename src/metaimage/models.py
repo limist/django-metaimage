@@ -4,6 +4,7 @@ import tempfile
 from urlparse import urlparse
 
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files import File
 from django.template.defaultfilters import slugify
@@ -12,19 +13,26 @@ from django.utils.translation import ugettext_lazy as _
 
 from PIL import Image
 
-from photologue.models import ImageModel
+from photologue.models import ImageModel, PHOTOLOGUE_DIR
 from tagging.fields import TagField
 
 from utils.openanything import fetch
 
 
-MAX_REMOTE_IMAGE_SIZE = 1048576  # 1 MB
+if settings.METAIMAGE_MAX_REMOTE_IMAGE_SIZE:
+    MAX_REMOTE_IMAGE_SIZE = settings.METAIMAGE_MAX_REMOTE_IMAGE_SIZE
+else:
+    MAX_REMOTE_IMAGE_SIZE = 1048576  # 1 MB
 
 PRIVACY_CHOICES = (
     (1, _('Public')),
     (2, _('Friends')),
     (3, _('Private')),
     )
+
+# This parameter is needed when cleaning up after unit-tests,
+# otherwise old test images litter the directory:
+METAIMAGE_DIR = PHOTOLOGUE_DIR
 
 
 class MetaImageException(Exception):
