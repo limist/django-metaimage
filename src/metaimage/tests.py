@@ -12,13 +12,15 @@ class TestMetaImage(TestCase):
 
     def test_metaimage_save(self):
         """
+        Test fetching and saving a remote image as a new MetaImage
+        instance.
+
         MetaImage wraps around photologue.ImageModel, which wraps
         around Django's ImageField.  So this simple test hits a lot of
         layers.
         """
         test_metaimage = MetaImage(
             title='Django logo',
-            slug='django-logo',
             source_url=self.remote_img_url,
             source_note='The logo of the Django project, for testing.',
             creator=self.foo,
@@ -27,6 +29,8 @@ class TestMetaImage(TestCase):
         the_metaimage = MetaImage.objects.get(slug='django-logo')
         assert the_metaimage.image is not None  # Image was downloaded
         assert the_metaimage.is_public
+        assert the_metaimage.updater == self.foo
+        assert the_metaimage.slug == 'django-logo'
         the_metaimage.delete()  # Removes image file too
 
     def tearDown(self):

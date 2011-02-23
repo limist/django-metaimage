@@ -142,7 +142,7 @@ class MetaImage(ImageModel, BaseModel):
         storage - in case the remote image ever changes location or
         disappears, you'll still have it.
         """
-        # If the MetaImage.source_url is defined but not the
+        # If the MetaImage.source_url is defined, but not the
         # ImageModel.image attribute, then we need to download the
         # remote image file, and set that file as the ImageModel.image
         # attribute.
@@ -168,9 +168,11 @@ class MetaImage(ImageModel, BaseModel):
             else:
                 raise MetaImageUnableToRetrieveSourceURL
         # Handle slug; note that this solution is not very robust
-        # currently, may use django-autoslug shortly.
+        # currently, may use django-autoslug next.
         if not self.slug:
             self.slug = slugify(self.title)
+        if self.creator and not self.updater:
+            self.updater = self.creator
         super(MetaImage, self).save(*args, **kwargs)
 
     def generate_filename_from_url(self, the_url=None):
