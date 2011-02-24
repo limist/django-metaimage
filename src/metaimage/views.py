@@ -61,6 +61,10 @@ def upload_metaimage(request, form_class=MetaImageUploadForm, template_name="met
     metaimage_form = form_class(user=request.user)
     if request.method == 'POST' and request.POST.get("action") == "upload":
         metaimage_form = form_class(request.user, request.POST, request.FILES)
+        # These two print statements below were handy in debugging
+        # unit tests:
+        # print metaimage_form.is_valid()
+        # print metaimage_form.errors
         if metaimage_form.is_valid():
             metaimage = metaimage_form.save()
             request.user.message_set.create(
@@ -140,12 +144,12 @@ def destroy_metaimage(request, id):
     # Currently, 2/2011, none of the included MetaImage templates
     # POSTs to this view.
     metaimage = MetaImage.objects.get(pk=id)
-    title = metaimage.title
     if metaimage.creator != request.user:
         request.user.message_set.create(
             message=_("You can't delete images that aren't yours."))
         return HttpResponseRedirect(reverse("your_metaimages"))
     if request.method == "POST" and request.POST["action"] == "delete":
+        title = metaimage.title
         metaimage.delete()
         request.user.message_set.create(
             message=_("Successfully deleted image '%s'.") % title)
