@@ -1,25 +1,44 @@
-django-metaimage is an app for the Django web framework; it provides a
-wrapper of useful functionality around ImageModel from
-django-photologue, which it requires.  It is GPL-licensed.  
+Overview
+========
 
-Some of the code was inspired/borrowed from Pinax's photo app, but I
-have removed Pinax dependencies, so that django-metaimage only
-requires Django itself, django-photologue, and django-tagging.
+django-metaimage is an app for the Django web framework; it's meant to
+be helpful when dealing with a lot of images from the Internet where
+the starting point is each image's URL, as opposed to the more common
+case of manually uploaded images via a web interface (which
+django-metaimage can also handle).  It is GPL-licensed.
+
+The main MetaImage model provides a wrapper of useful functionality
+around ImageModel from django-photologue, a dependency.  Some of the
+django-metaimage code was initially inspired from Pinax's photo app,
+but I have removed Pinax dependencies, so that django-metaimage only
+requires:
+
+1. Django 
+2. django-photologue
+3. django-tagging
+4. django-uni-form, trunk (optional)
+
+You might need django-uni-form, if you want to use the included
+example templates, and want to see all django-metaimage's tests pass.
+
+Overall, this app is an alternate way to use the powerful
+django-photologue app with your site, and possibly with any of your
+code/process where there's an influx of many externally-hosted images
+that need to be represented locally somehow.
 
 
-OVERVIEW
---------
+Usage
+-----
 
 Most websites need to deal with images, sometimes uploaded from users,
 or retrieved from a remote site.  The django-metaimage package is
 especially helpful with the latter case: you can supply just the URL
 of a remote image, and it will be downloaded and saved locally.
-Overall, this app is an alternative way to use the powerful
-django-photologue app with your site.
 
 The main class, MetaImage, enables storing useful metadata about
 images, including a title, caption, notes about the source
-(e.g. copyrights), and tags.  MetaImage attributes include:
+(e.g. copyrights, permissions), and tags.  MetaImage attributes
+include:
 
 - title, slug, caption, source_note (for attribution text, copyrights, etc.)
 - source_url
@@ -28,17 +47,19 @@ images, including a title, caption, notes about the source
 - tags
 
 
-Key MetaImage methods include:
+And key MetaImage methods include:
 
 - A save() method that can automatically download a remote image to
   your filesystem, so you'll always have a local copy should the
   remote image vanish into the Internet aether.  
-- render(), which spits out the HTML to show your image on a webpage.
+- render() and render_linked(), which spits out the HTML to show your
+  image on a webpage, with a hyperlink to a details-page.
 
-Basic views, tests, and templates are also provided.
+Basic views, tests, and templates are also provided, so you can
+quickly integrate the app into an existing Django site.
 
 
-INSTALLATION
+Installation
 ------------
 
 Install via "pip install django-metaimage" or from source. Then just
@@ -56,15 +77,19 @@ settings.py file, in the INSTALLED_APPS list, e.g.
         ]
 
 
-And then, do a "manage.py syncdb" to create the database-side tables
+And then, do a "manage.py syncdb" to create the database tables
 needed.
 
-Optional: Templates are provided for adding, editing, viewing, etc. of
+
+OPTIONAL: Templates are provided for adding, editing, viewing, etc. of
 metaimages; they're very basic and meant only as a starting point.
-But if you want to use them directly, do at least these two things: 1)
-get and install django-uni-form > 0.7.0 which some of the templates
-rely on, and also update your setting.py INSTALLED_APPS to list
-"uni_form"; 2) update your site-wide urls.py, e.g.
+But if you want to use them directly, do at least these two things:
+
+1. Get and install django-uni-form > 0.7.0 which some of the templates
+   rely on, and also update your setting.py INSTALLED_APPS to list
+   "uni_form" as a package dependency.
+2. Update your site-wide urls.py, e.g.
+
 
 ::
 
@@ -81,9 +106,41 @@ packages; you can activate them as needed, but be sure to update your
 INSTALLED_APPS accordingly.
 
 
-BUGS
-----
+Testing
+-------
 
-Please log bugs/issues using django-metaimage's github site,
+I've included a set of unit tests for the app; if you have integrated
+django-metaimage into an existing Django site/project, just do the
+usual "manage.py test" and the tests should be run, BUT for all tests
+to pass, the current trunk (as of 2/2011) of django-uni-form is
+needed:
+
+https://github.com/pydanny/django-uni-form
+
+
+Should you want to run django-metaimage's test suite outside of any
+particular Django site/project - i.e. stand-alone Django app testing -
+I suggest installing and using the django-app-test-runner and my fork
+of it at:
+
+https://github.com/limist/django-app-test-runner
+
+...which enables usage of a testing-specific settings file.  After you
+install django-app-test-runner in your virtualenv (don't develop in
+Python without it!) you should be able to do something like:
+
+::
+
+    cd to/where/django-metaimage/code/is
+    app-test-runner ./src/metaimage/ -s src/metaimage/testsettings.py
+
+
+Note that you'll need Internet connectivity for the tests to pass.
+
+
+Errors, etc.
+------------
+
+Please log errors/issues using django-metaimage's github site,
 http://github.com/limist/django-metaimage/issues
 

@@ -1,7 +1,10 @@
-django-metaimage is an app for the Django web framework; it provides a
-wrapper of useful functionality around ImageModel from django-photologue.
+django-metaimage is an app for the Django web framework; it's meant to
+be helpful when dealing with a lot of images from the Internet where
+the starting point is each image's URL, as opposed to the more common
+case of manually uploaded images via a web interface (which
+django-metaimage can also handle).
 
-Copyright (C) 2010  Kai Wu, k@limist.com
+Copyright (c) 2011 Kai Wu, k@limist.com
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
