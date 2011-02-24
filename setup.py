@@ -9,7 +9,7 @@ def read(fname):
 setup(
     name='django-metaimage',
     version='0.3',
-    url='',
+    url='https://github.com/limist/django-metaimage',
     license='GPLv3',
     description='Wrapper around django-photologue dealing w/ remote images.',
     long_description=read('README'),
