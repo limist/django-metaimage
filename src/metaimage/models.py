@@ -19,7 +19,7 @@ from tagging.fields import TagField
 from utils.openanything import fetch
 
 
-if settings.METAIMAGE_MAX_REMOTE_IMAGE_SIZE:
+if getattr(settings, 'METAIMAGE_MAX_REMOTE_IMAGE_SIZE', False):
     MAX_REMOTE_IMAGE_SIZE = settings.METAIMAGE_MAX_REMOTE_IMAGE_SIZE
 else:
     MAX_REMOTE_IMAGE_SIZE = 1048576  # 1 MB
@@ -120,12 +120,12 @@ class MetaImage(ImageModel, BaseModel):
         _('source URL'),
         blank=True, null=True,
         verify_exists=True,
-        help_text='The external URL where the image originated, e.g. a book cover image on Amazon.')
+        help_text='The external URL where the image originated from.')
     source_note = models.CharField(
         _('source note'),
         max_length=500,
         blank=True, null=True,
-        help_text='Attribution text like copyright notices, permission notes and dates, etc.')
+        help_text='Attribution text, copyright notices, permissions, etc.')
     safetylevel = models.IntegerField(
         _('safetylevel'), choices=SAFETY_LEVEL, default=1)
     privacy = models.IntegerField(
