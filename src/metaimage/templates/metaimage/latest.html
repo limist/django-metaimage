@@ -37,7 +37,8 @@ own or in Pinax:
         <div class="gallery-photo-thumb">
             {{ metaimage.render_thumbnail_linked }}
             <br>
-            from <a href="{% url profile_detail metaimage.creator.username %}">{{ metaimage.creator.username }}</a><br>
+            from {{ metaimage.creator.username }}
+            <br>
             {% comment %}
             <img src="{{ MEDIA_URL }}pinax/images/silk/icons/comment.png" border="0" class="noborder" align="absmiddle" /><a href="{% url metaimage_details metaimage.id %}#imagecomments">{% get_comment_count for metaimage as commentcount %} {{ commentcount }} Comments</a><br>
             {% endcomment %}
