@@ -14,7 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 from PIL import Image
 
 from photologue.models import ImageModel, PHOTOLOGUE_DIR
-from tagging.fields import TagField
+from taggit.managers import TaggableManager
 
 from utils.openanything import fetch
 
@@ -79,7 +79,7 @@ class ImageSet(BaseModel):
     privacy = models.IntegerField(
         _('privacy'),
         choices=PRIVACY_CHOICES, default=1)
-    tags = TagField()
+    tags = TaggableManager()
 
 
 class MetaImage(ImageModel, BaseModel):
@@ -132,7 +132,7 @@ class MetaImage(ImageModel, BaseModel):
         _('privacy'), choices=PRIVACY_CHOICES, default=1)
     imageset = models.ManyToManyField(
         ImageSet, blank=True, null=True, verbose_name=_('image set'))
-    tags = TagField()
+    tags = TaggableManager()
 
     class Meta:
         verbose_name = 'MetaImage'

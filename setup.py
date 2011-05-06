@@ -8,7 +8,7 @@ def read(fname):
 
 setup(
     name='django-metaimage',
-    version='0.3',
+    version='0.4',
     url='https://github.com/limist/django-metaimage',
     license='GPLv3',
     description='Wrapper around django-photologue dealing w/ remote images.',
@@ -21,7 +21,7 @@ setup(
         'setuptools',
         'Django',
         'django-photologue',
-        'django-tagging',
+        'django-taggit',
         'PIL'],
     classifiers=[
         'Development Status :: 3 - Alpha',
