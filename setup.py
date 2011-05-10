@@ -20,6 +20,7 @@ setup(
     install_requires=[
         'setuptools',
         'Django',
+        'django-autoslug',
         'django-photologue',
         'django-taggit',
         'PIL'],

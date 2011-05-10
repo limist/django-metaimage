@@ -7,12 +7,12 @@ from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files import File
-from django.template.defaultfilters import slugify
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from PIL import Image
 
+from autoslug import AutoSlugField
 from photologue.models import ImageModel, PHOTOLOGUE_DIR
 from taggit.managers import TaggableManager
 
@@ -24,15 +24,19 @@ if getattr(settings, 'METAIMAGE_MAX_REMOTE_IMAGE_SIZE', False):
 else:
     MAX_REMOTE_IMAGE_SIZE = 1048576  # 1 MB
 
+# The METAIMAGE_DIR parameter is needed when cleaning up after
+# unit-tests, otherwise old test images litter the directory:
+if getattr(settings, 'METAIMAGE_DIR', False):
+    METAIMAGE_DIR = settings.METAIMAGE_DIR
+else:
+    METAIMAGE_DIR = PHOTOLOGUE_DIR
+
+
 PRIVACY_CHOICES = (
     (1, _('Public')),
     (2, _('Friends')),
     (3, _('Private')),
     )
-
-# This parameter is needed when cleaning up after unit-tests,
-# otherwise old test images litter the directory:
-METAIMAGE_DIR = PHOTOLOGUE_DIR
 
 
 class MetaImageException(Exception):
@@ -112,7 +116,12 @@ class MetaImage(ImageModel, BaseModel):
         (2, _('Not Safe')),
     )
     title = models.CharField(_('title'), max_length=200)
-    slug = models.SlugField(_('slug'))
+    # With AutoSlugField, editable should be set to True to avoid
+    # problems with Django's admin form generation - though in
+    # practice slugs should not be manually edited:
+    slug = AutoSlugField(
+        max_length=100, editable=True, populate_from='title', unique=True,
+        help_text='In general do NOT edit slugs manually.')
     caption = models.TextField(_('caption'), blank=True)
     # The source of a MetaImage may be from another site; if so,
     # provide URL here.
@@ -144,41 +153,50 @@ class MetaImage(ImageModel, BaseModel):
     def get_absolute_url(self):
         return ("metaimage_details", [self.pk])
 
+    def is_str_an_image(self, the_string):
+        # Verify that the data is, in fact, an image.
+        assert isinstance(the_string, str)
+        the_image = Image.open(StringIO(the_string))
+        try:
+            the_image.verify()
+            return True
+        except Exception:
+            return False
+
     def save(self, *args, **kwargs):
         """
         MetaImage.save transparently fetches remote images to local
         storage - in case the remote image ever changes location or
         disappears, you'll still have it.
         """
-        # If the MetaImage.source_url is defined, but not the
-        # ImageModel.image attribute, then we need to download the
-        # remote image file, and set that file as the ImageModel.image
-        # attribute.
+        raw_image_data = None
+        local_img_filename = None
+        # There are three cases of how we get image data: 1) uploaded,
+        # 2) remote image URL given, or 3) the raw image string is
+        # passed in.  Cases 2) and 3) are handled below:
         if getattr(self, 'source_url') and not getattr(self, 'image'):
-            image_data_dct = fetch(self.source_url,
-                                   max_size=MAX_REMOTE_IMAGE_SIZE)
-            if image_data_dct:
-                # Verify that the data is, in fact, an image.
-                image_data = image_data_dct['data']
-                the_image = Image.open(StringIO(image_data))
-                try:
-                    the_image.verify()
-                except Exception, e:
-                    raise MetaImageSourceURLNotAnImage(e)
-                # Django's save() method must receive a Django File
-                # object, which in turn, must be wrapped around a real
-                # file (not StringIO) to work; thus, use tempfile.
-                tmp_file = tempfile.NamedTemporaryFile()
-                tmp_file.write(image_data)
-                tmp_image_file = File(tmp_file)
-                filename = self.generate_filename_from_url()
-                self.image.save(filename, tmp_image_file)
-            else:
+            # Download remote data, synchronously for now:
+            image_data_dct = fetch(
+                self.source_url,
+                max_size=MAX_REMOTE_IMAGE_SIZE)
+            if not image_data_dct:
                 raise MetaImageUnableToRetrieveSourceURL
-        # Handle slug; note that this solution is not very robust
-        # currently, may use django-autoslug next.
-        if not self.slug:
-            self.slug = slugify(self.title)
+            raw_image_data = image_data_dct['data']
+            local_img_filename = self.generate_filename_from_url()
+        elif 'image_data' in kwargs and not self.source_url and not self.image:
+            # Alternatively, raw image data (as a string) was given:
+            raw_image_data = kwargs.pop('image_data')
+            local_img_filename = self.generate_filename_from_data(
+                raw_image_data)
+        # Create and save the remote/given image if needed:
+        if raw_image_data and local_img_filename:
+            assert self.is_str_an_image(raw_image_data)
+            # Django's save() method must receive a Django File
+            # object, which in turn, must be wrapped around a real
+            # file (not StringIO) to work. Thus use tempfile:
+            tmp_file = tempfile.NamedTemporaryFile()
+            tmp_file.write(raw_image_data)
+            self.image.save(local_img_filename, File(tmp_file))
         if self.creator and not self.updater:
             self.updater = self.creator
         super(MetaImage, self).save(*args, **kwargs)
@@ -196,11 +214,16 @@ class MetaImage(ImageModel, BaseModel):
         the_filename = non_alphanum_regex.sub('_', raw_filename)
         return the_filename
 
+    def generate_filename_from_data(self, the_data):
+        # Assume only PNG files for now:
+        return '%s.png' % hash(the_data)
+
     def get_public_status(self):
         """
         Public images can be displayed in default views.
         """
         return bool(self.privacy == 1)
+
     is_public = property(get_public_status)
 
     def render(self, the_size='width500', linked=False):
