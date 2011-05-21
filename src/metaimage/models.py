@@ -24,10 +24,16 @@ if getattr(settings, 'METAIMAGE_MAX_REMOTE_IMAGE_SIZE', False):
 else:
     MAX_REMOTE_IMAGE_SIZE = 1048576  # 1 MB
 
-# The METAIMAGE_DIR parameter is needed when cleaning up after
-# unit-tests, otherwise old test images litter the directory:
-if getattr(settings, 'METAIMAGE_DIR', False):
-    METAIMAGE_DIR = settings.METAIMAGE_DIR
+# The METAIMAGE_DIR parameter is referenced in tests.py when cleaning
+# up after unit-tests, otherwise old test images litter the directory:
+#
+# Note that PHOTOLOGUE_DIR is the "top-level" directory which holds
+# several others: PHOTOLOGUE_PATH is where original-image files are
+# stored; temp/ is where uploads are held; samples/, watermarks/ are
+# two more.  So to customize, both PHOTOLOGUE_DIR and PHOTOLOGUE_PATH
+# (which can be a function) should be in settings.py.
+if getattr(settings, 'PHOTOLOGUE_DIR', False):
+    METAIMAGE_DIR = settings.PHOTOLOGUE_DIR
 else:
     METAIMAGE_DIR = PHOTOLOGUE_DIR
 
@@ -141,7 +147,7 @@ class MetaImage(ImageModel, BaseModel):
         _('privacy'), choices=PRIVACY_CHOICES, default=1)
     imageset = models.ManyToManyField(
         ImageSet, blank=True, null=True, verbose_name=_('image set'))
-    tags = TaggableManager()
+    tags = TaggableManager(blank=True)  # taggit has blank=False by default.
 
     class Meta:
         verbose_name = 'MetaImage'
@@ -168,6 +174,10 @@ class MetaImage(ImageModel, BaseModel):
         MetaImage.save transparently fetches remote images to local
         storage - in case the remote image ever changes location or
         disappears, you'll still have it.
+
+        For the other major use-case of server-side generated images,
+        pass in the raw image data as a string with
+        save(image_data=the_image_as_string).
         """
         raw_image_data = None
         local_img_filename = None
