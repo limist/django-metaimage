@@ -10,7 +10,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'metaimage',
     'photologue',
-    'tagging',
+    'taggit',
     'uni_form')
 
 METAIMAGE_MAX_REMOTE_IMAGE_SIZE = 1048576  # 1 MB
